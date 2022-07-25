@@ -21,6 +21,7 @@
 	// <!-- jo image select krtay uska url ajayega  -->
 	function readURL(input) {
 		if (input.files && input.files[0]) {
+			document.getElementById('result').style.display = 'none';
 			var reader = new FileReader();
 			reader.onload = function (e) {
 				var img = new Image()
@@ -69,6 +70,7 @@
 				let img = document.getElementById('result');
 				const blobUrl = URL.createObjectURL(data);
 				img.src = blobUrl;
+				document.getElementById('result').style.display = 'flex';
 				enableBtn();
 				img.width = $('#input_image').width();
 				img.height = $('#input_image').height();
@@ -80,14 +82,13 @@
 
 <body>
 	<!-- splash screen -->
-	<!-- <div class="intro">
-		<h1 class="logo-header">
-			<span class="logo">Pix</span><span class="logo">Bay.</span>
-		</h1>
-	</div> -->
-	<!-- splash screen end -->
-
-
+	<div class="intro">
+		<h2 class="logo-header">
+			<!-- <img src="/static/images/pixbay logo.png" class="logoimg"> -->
+			<span class="logo"><img src="/static/images/pixbay logo.png" class="logoimg"> Pix</span><span
+				class="logo">Bay.</span>
+		</h2>
+	</div>
 	<!------------------------ Main container starts----------------------------->
 	<div class="main-container">
 		<!-- side bar -->
@@ -119,8 +120,9 @@
 				<li>
 					<div class="slider_input">
 						<form action="">
-							<p>Contrast : <span id="contrast_value" ></span></p>
-							<input type="range" min="1" max="20" value="10" name="contrast" id="contrast" class="myRange">
+							<p>Contrast : <span id="contrast_value"></span></p>
+							<input type="range" min="1" max="20" value="10" name="contrast" id="contrast"
+								class="myRange">
 						</form>
 					</div>
 				</li>
@@ -144,7 +146,8 @@
 					<div class="slider_input">
 						<form action="">
 							<p>Saturation: <span id="saturate_value"></span></p>
-							<input type="range" min="1" max="20" value="10" name="saturate" class="myRange" id="saturate">
+							<input type="range" min="1" max="20" value="10" name="saturate" class="myRange"
+								id="saturate">
 						</form>
 					</div>
 				</li>
@@ -174,7 +177,7 @@
 					<img id="input_image" />
 				</div>
 			</div>
-			<div class="s">
+			<div class="circle_icons">
 				<button class="a" onclick="send_request('/mirror');"><i class="fa fa-clone"></i> Mirror</button>
 				<button class="a" onclick="send_request('/rescale');"><i class="fa-solid fa-minimize"></i>
 					Scale</button>
@@ -190,56 +193,80 @@
 
 </body>
 <script>
-	document.getElementById("contrast_value").innerHTML = 0
-	document.getElementById("sharpen_value").innerHTML = 0
-	document.getElementById("saturate_value").innerHTML = 0
-	document.getElementById("bright_value").innerHTML = 0
-
-	document.getElementById("contrast").oninput = function () {
-		document.getElementById("contrast_value").innerHTML = $(this).val() - 10;
-		send_slide('/contrast', $(this).val())
+	document.getElementById("contrast_value").innerHTML =0
+	document.getElementById("sharpen_value").innerHTML =0
+	document.getElementById("saturate_value").innerHTML =0
+	document.getElementById("bright_value").innerHTML =0
+	
+	document.getElementById("contrast").oninput= function() {
+	  document.getElementById("contrast_value").innerHTML =$(this).val()-10;
+		document.getElementById("sharpen_value").innerHTML =0;
+	document.getElementById("bright_value").innerHTML =0;
+	document.getElementById("saturate_value").innerHTML =0;
+	document.getElementById("Sharpen").value=10;
+	document.getElementById("bright").value=10;
+	document.getElementById("saturate").value=10;
+	send_slide('/contrast',$(this).val())}
+	
+	document.getElementById("Sharpen").oninput= function() {
+	  document.getElementById("sharpen_value").innerHTML =$(this).val()-10;
+	document.getElementById("contrast_value").innerHTML =0;
+	document.getElementById("bright_value").innerHTML =0;
+	document.getElementById("saturate_value").innerHTML =0;
+	document.getElementById("contrast").value=10;
+	document.getElementById("bright").value=10;
+	document.getElementById("saturate").value=10;
+	send_slide('/sharpen',$(this).val())
 	}
-
-	document.getElementById("Sharpen").oninput = function () {
-		document.getElementById("sharpen_value").innerHTML = $(this).val() - 10;
-		send_slide('/sharpen', $(this).val())
+	
+	document.getElementById("bright").oninput= function() {
+	  document.getElementById("bright_value").innerHTML =$(this).val()-10;
+	  document.getElementById("sharpen_value").innerHTML =0;
+	document.getElementById("contrast_value").innerHTML =0;
+	document.getElementById("saturate_value").innerHTML =0;
+	document.getElementById("Sharpen").value=10;
+	document.getElementById("contrast").value=10;
+	document.getElementById("saturate").value=10;
+	send_slide('/bright',$(this).val())
 	}
-
-	document.getElementById("bright").oninput = function () {
-		document.getElementById("bright_value").innerHTML = $(this).val() - 10;
-		send_slide('/bright', $(this).val())
+	
+	document.getElementById("saturate").oninput= function() {
+	  document.getElementById("saturate_value").innerHTML =$(this).val()-10;
+	  document.getElementById("sharpen_value").innerHTML =0;
+	document.getElementById("contrast_value").innerHTML =0;
+	document.getElementById("bright_value").innerHTML =0;
+	document.getElementById("Sharpen").value=10;
+	document.getElementById("contrast").value=10;
+	document.getElementById("bright").value=10;
+	send_slide('/saturation',$(this).val())
 	}
-
-	document.getElementById("saturate").oninput = function () {
-		document.getElementById("saturate_value").innerHTML = $(this).val() - 10;
-		send_slide('/saturation', $(this).val())
-	}
-	function send_slide(url, slide_value) {
-		var formData = new FormData();
-		formData.append('value', slide_value)
-		file = $('#input_file')[0].files[0];
-		formData.append('file', file)
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: formData,
-			processData: false,
-			contentType: false,
-			xhrFields: {
-				responseType: 'blob'
-			},
-			success: function (data) {
-				let img = document.getElementById('result');
-				const blobUrl = URL.createObjectURL(data);
-				img.src = blobUrl;
-				enableBtn();
-				img.width = $('#input_image').width();
-				img.height = $('#input_image').height();
-			}
-		});
-	}
-
-</script>
+		function send_slide(url, slide_value) {
+			var formData = new FormData();
+			formData.append('value', slide_value)
+			file = $('#input_file')[0].files[0];
+			formData.append('file', file)
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					let img = document.getElementById('result');
+					const blobUrl = URL.createObjectURL(data);
+					img.src = blobUrl;
+					document.getElementById('result').style.display='flex';
+					enableBtn();
+					img.width = $('#input_image').width();
+					img.height = $('#input_image').height();
+				}
+			});
+		}
+	
+	</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
 <script src="/static/script.js"></script>
 
